@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Boston Housing Price Prediction</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+        
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        form {
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: 600;
+            color: #2c3e50;
+            cursor: help;
+        }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        
+        input[type="number"]:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        input[type="submit"] {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            margin-top: 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        
+        input[type="submit"]:hover {
+            background-color: #2980b9;
+        }
+        
+        .info-box {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #e8f4fc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        /* Prediction result styles */
+        .prediction-result {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 20px;
+            margin-top: 30px;
+            border-radius: 0 4px 4px 0;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .prediction-result h3 {
+            color: #2c3e50;
+            margin-top: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+            text-align: left;
+        }
+        
+        .prediction-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 10px 0;
+        }
+        
+        .prediction-note {
+            font-size: 14px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
+        .prediction-error {
+            background-color: #fdecea;
+            border-left: 4px solid #e74c3c;
+            padding: 20px;
+            margin-top: 30px;
+            color: #c0392b;
+            border-radius: 0 4px 4px 0;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Responsive design */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            
+            form {
+                padding: 15px;
+            }
+            
+            .prediction-value {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h2>Boston Housing Price Prediction</h2>
+    <form action="/predict" method="post">
+        <div class="info-box">
+            Enter values for each feature. Hover over labels for descriptions.
+        </div>
+
+        <label title="Per capita crime rate by town">CRIM:</label>
+        <input type="number" name="CRIM" step="0.0001" placeholder="e.g. 0.00632" min="0">
+
+        <label title="Proportion of residential land zoned for lots over 25,000 sq.ft">ZN:</label>
+        <input type="number" name="ZN" step="1" placeholder="e.g. 18" min="0">
+
+        <label title="Proportion of non-retail business acres per town">INDUS:</label>
+        <input type="number" name="INDUS" step="0.01" placeholder="e.g. 2.31" min="0">
+
+        <label title="Charles River dummy variable (1 if tract bounds river; 0 otherwise)">CHAS:</label>
+        <input type="number" name="CHAS" step="1" placeholder="0 or 1" min="0" max="1">
+
+        <label title="Nitric oxides concentration (parts per 10 million)">NOX:</label>
+        <input type="number" name="NOX" step="0.01" placeholder="e.g. 0.538" min="0">
+
+        <label title="Average number of rooms per dwelling">RM:</label>
+        <input type="number" name="RM" step="0.1" placeholder="e.g. 6.575" min="0">
+
+        <label title="Proportion of owner-occupied units built prior to 1940">AGE:</label>
+        <input type="number" name="AGE" step="0.1" placeholder="e.g. 65.2" min="0" max="100">
+
+        <label title="Weighted distances to five Boston employment centers">DIS:</label>
+        <input type="number" name="DIS" step="0.01" placeholder="e.g. 4.09" min="0">
+
+        <label title="Index of accessibility to radial highways">RAD:</label>
+        <input type="number" name="RAD" step="1" placeholder="e.g. 1" min="1">
+
+        <label title="Full-value property-tax rate per $10,000">TAX:</label>
+        <input type="number" name="TAX" step="1" placeholder="e.g. 296" min="0">
+
+        <label title="Pupil-teacher ratio by town">PTRATIO:</label>
+        <input type="number" name="PTRATIO" step="0.1" placeholder="e.g. 15.3" min="0">
+
+        <label title="1000(Bk - 0.63)^2 where Bk is the proportion of blacks by town">B:</label>
+        <input type="number" name="B" step="0.1" placeholder="e.g. 396.9" min="0">
+
+        <label title="% lower status of the population">LSTAT:</label>
+        <input type="number" name="LSTAT" step="0.1" placeholder="e.g. 4.98" min="0">
+
+        <input type="submit" value="Predict">
+    </form>
+
+    {% if prediction_text %}
+        <div class="prediction-result">
+            <h3>Prediction Result</h3>
+            <div class="prediction-value">{{ prediction_text }}</div>
+            <p class="prediction-note">Median home value in $1000s</p>
+        </div>
+    {% elif error %}
+        <div class="prediction-error">
+            Error: {{ error }}
+        </div>
+    {% endif %}
+</body>
+</html>
